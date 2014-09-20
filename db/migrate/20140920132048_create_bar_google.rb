@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/MethodLength
 class CreateBarGoogle < ActiveRecord::Migration
   def change
     create_table :bar_google do |t|
@@ -14,11 +15,20 @@ class CreateBarGoogle < ActiveRecord::Migration
     end
     reversible do |dir|
       dir.up do
-        execute 'ALTER TABLE bar_google ADD CONSTRAINT bar_google_ibfk_1
-          FOREIGN KEY(bar_id) REFERENCES bars(id) ON DELETE CASCADE ON UPDATE CASCADE'
+        execute('
+          ALTER TABLE bar_google
+          ADD CONSTRAINT bar_google_ibfk_1
+          FOREIGN KEY(bar_id)
+          REFERENCES bars(id)
+          ON DELETE CASCADE
+          ON UPDATE CASCADE
+        ')
       end
       dir.down do
-        execute 'ALTER TABLE bar_google DROP FOREIGN KEY bar_google_ibfk_1'
+        execute('
+          ALTER TABLE bar_google
+          DROP FOREIGN KEY bar_google_ibfk_1
+        ')
       end
     end
   end

@@ -7,42 +7,43 @@ class BarMistergoodbeer < ActiveRecord::Base
     doc = File.open('app/assets/sources/mistergoodbeer.html', 'r').read
     doc.scan(/gWindowContents0.push\((.*?)\)\;/).each do |bar_info|
       bar_info = bar_info.first
-      infos = [
-        ['name', bar_name(bar_info)],
-        ['address', bar_address(bar_info)],
-        ['price', bar_price(bar_info)],
-        ['happyhour_open', bar_hh_open(bar_info)],
-        ['happyhour_close', bar_hh_close(bar_info)],
-        ['happyhour_price', bar_hh_price(bar_info)]
-      ]
-      puts Terminal::Table.new :rows => infos
-      bar = Bar.find_by(name: bar_name(bar_info))
-      bar ||= Bar.create(
-        name: bar_name(bar_info),
-        address: bar_address(bar_info),
-        price: bar_price(bar_info),
-        hh_open: bar_hh_open(bar_info),
-        hh_close: bar_hh_close(bar_info),
-        hh_price: bar_hh_price(bar_info)
-      )
-      find_by(bar_id: bar[:id]) || create(
-        bar_id: bar[:id],
-        url: bar_url(bar_info),
-        name: bar_name(bar_info),
-        address: bar_address(bar_info),
-        price: bar_price(bar_info),
-        hh_open: bar_hh_open(bar_info),
-        hh_close: bar_hh_close(bar_info),
-        hh_price: bar_hh_price(bar_info)
-      )
+      bar = Bar.find_by(name: bar_name(bar_info)) || create_bar(bar_info)
+      find_by(bar_id: bar[:id]) || create_bar_mistergoodbeer(bar[:id], bar_info)
     end
     true
   end
 
+  def self.create_bar(bar_info)
+    Bar.create(
+      name: bar_name(bar_info),
+      address: bar_address(bar_info),
+      price: bar_price(bar_info),
+      hh_open: bar_hh_open(bar_info),
+      hh_close: bar_hh_close(bar_info),
+      hh_price: bar_hh_price(bar_info)
+    )
+  end
+
+  def self.create_bar_mistergoodbeer(bar_id, bar_info)
+    create(
+      bar_id: bar_id,
+      url: bar_url(bar_info),
+      name: bar_name(bar_info),
+      address: bar_address(bar_info),
+      price: bar_price(bar_info),
+      hh_open: bar_hh_open(bar_info),
+      hh_close: bar_hh_close(bar_info),
+      hh_price: bar_hh_price(bar_info)
+    )
+  end
+
   def self.bar_name(bar_info)
-    name = /(?<=fiche\\\/\d\\\">)(.*?)(?=<img)/.match(bar_info).to_s
-    name = /(?<=fiche\\\/\d\d\\\">)(.*?)(?=<img)/.match(bar_info).to_s if name == ''
-    name = /(?<=fiche\\\/\d\d\d\\\">)(.*?)(?=<img)/.match(bar_info).to_s if name == ''
+    name = /(?<=fiche\\\/\d\\\">)(.*?)(?=<img)/
+      .match(bar_info).to_s
+    name = /(?<=fiche\\\/\d\d\\\">)(.*?)(?=<img)/
+      .match(bar_info).to_s if name == ''
+    name = /(?<=fiche\\\/\d\d\d\\\">)(.*?)(?=<img)/
+      .match(bar_info).to_s if name == ''
     decode(name)
   end
 
@@ -52,7 +53,11 @@ class BarMistergoodbeer < ActiveRecord::Base
   end
 
   def self.bar_price(bar_info)
-    price = /(?<=prix_sh\\\">)(.*?)(?= \\u20ac<)/.match(bar_info).to_s.gsub(',','.').to_f
+    price = /(?<=prix_sh\\\">)(.*?)(?= \\u20ac<)/
+      .match(bar_info)
+      .to_s
+      .gsub(',', '.')
+      .to_f
     price > 0 ? price : nil
   end
 
@@ -72,7 +77,11 @@ class BarMistergoodbeer < ActiveRecord::Base
   end
 
   def self.bar_hh_price(bar_info)
-    price = /(?<=prix_hh\\\">)(.*?)(?= \\u20ac en Happy hour<)/.match(bar_info).to_s.gsub(',','.').to_f
+    /(?<=prix_hh\\\">)(.*?)(?= \\u20ac en Happy hour<)/
+      .match(bar_info)
+      .to_s
+      .gsub(',', '.')
+      .to_f
   end
 
   def self.bar_url(bar_info)
@@ -81,20 +90,28 @@ class BarMistergoodbeer < ActiveRecord::Base
   end
 
   def self.decode(str)
-    str.gsub('\u00e9', 'é')
-      .gsub('\u00e0', 'à')
-      .gsub('\u00e8', 'è')
-      .gsub('\u00f4', 'ô')
-      .gsub('\u00e2', 'â')
-      .gsub('\u00e7', 'ç')
-      .gsub('\u00ea', 'ê')
-      .gsub('\u00fb', 'û')
-      .gsub('\u00b4', '´')
-      .gsub('\u00ed', 'í')
-      .gsub('\u2030', '‰')
-      .gsub('\u20ac', '€')
-      .gsub('\u00a3', '£')
-      .gsub('\u00c9', 'É')
-      .gsub('\u00eb', 'ë')
+    {
+      '\u00e9' => 'é', '\u00e0' => 'à',
+      '\u00e8' => 'è', '\u00f4' => 'ô',
+      '\u00e2' => 'â', '\u00e7' => 'ç',
+      '\u00ea' => 'ê', '\u00fb' => 'û',
+      '\u00b4' => '´', '\u00ed' => 'í',
+      '\u2030' => '‰', '\u20ac' => '€',
+      '\u00a3' => '£', '\u00c9' => 'É',
+      '\u00eb' => 'ë'
+    }.each { |k, v| str = str.gsub(k, v) }
+  end
+
+  def self.log(bar_info)
+    log(bar_info)
+    infos = [
+      ['name', bar_name(bar_info)],
+      ['address', bar_address(bar_info)],
+      ['price', bar_price(bar_info)],
+      ['happyhour_open', bar_hh_open(bar_info)],
+      ['happyhour_close', bar_hh_close(bar_info)],
+      ['happyhour_price', bar_hh_price(bar_info)]
+    ]
+    puts Terminal::Table.new rows: infos
   end
 end

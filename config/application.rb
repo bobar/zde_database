@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/LineLength
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
