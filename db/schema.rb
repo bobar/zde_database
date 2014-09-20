@@ -11,7 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140920105805) do
+ActiveRecord::Schema.define(version: 20140920132048) do
+
+  create_table "bar_google", force: true do |t|
+    t.integer  "bar_id"
+    t.string   "name"
+    t.string   "address"
+    t.float    "rating",     limit: 24
+    t.float    "latitude",   limit: 24
+    t.float    "longitude",  limit: 24
+    t.string   "types"
+    t.string   "place_id"
+    t.string   "old_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "bar_google", ["bar_id"], name: "bar_google_ibfk_1", using: :btree
 
   create_table "bar_mistergoodbeer", force: true do |t|
     t.integer  "bar_id"
