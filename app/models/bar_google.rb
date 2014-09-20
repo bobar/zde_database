@@ -62,34 +62,4 @@ class BarGoogle < ActiveRecord::Base
     end
     body['results'][0]
   end
-
-  def self.place(name, args = {})
-    begin
-      response = body['results'][0]
-      puts response['name']
-      puts response['formatted_address']
-      puts response['opening_hours']
-      puts response['geometry']
-      puts response['types'].inspect
-
-      google_place = find_or_initialize_by(
-        place_id: response['place_id']
-      )
-
-      google_place.update(
-        name: response['name'],
-        address: response['formatted_address'],
-        latitude: response['geometry']['location']['lat'],
-        longitude: response['geometry']['location']['lng'],
-        rating: response['rating'],
-        old_id: response['id'],
-        types: response['types'].to_json,
-      )
-
-      return google_place.place_id
-    rescue
-      puts response.body.inspect
-      return true
-    end
-  end
 end
