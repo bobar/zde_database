@@ -7,6 +7,7 @@ class BarMistergoodbeer < ActiveRecord::Base
     doc = File.open('app/assets/sources/mistergoodbeer.html', 'r').read
     doc.scan(/gWindowContents0.push\((.*?)\)\;/).each do |bar_info|
       bar_info = bar_info.first
+      log(bar_info)
       bar = Bar.find_by(name: bar_name(bar_info)) || create_bar(bar_info)
       find_by(bar_id: bar[:id]) || create_bar_mistergoodbeer(bar[:id], bar_info)
     end
@@ -89,21 +90,18 @@ class BarMistergoodbeer < ActiveRecord::Base
     "http://www.mistergoodbeer.com/bars/fiche/#{mgb_id}"
   end
 
-  def self.decode(str)
+  def self.decode(string)
     {
-      '\u00e9' => 'é', '\u00e0' => 'à',
-      '\u00e8' => 'è', '\u00f4' => 'ô',
-      '\u00e2' => 'â', '\u00e7' => 'ç',
-      '\u00ea' => 'ê', '\u00fb' => 'û',
-      '\u00b4' => '´', '\u00ed' => 'í',
-      '\u2030' => '‰', '\u20ac' => '€',
-      '\u00a3' => '£', '\u00c9' => 'É',
-      '\u00eb' => 'ë'
-    }.each { |k, v| str = str.gsub(k, v) }
+      '\u00e9' => 'é', '\u00e0' => 'à', '\u00e8' => 'è',
+      '\u00f4' => 'ô', '\u00e2' => 'â', '\u00e7' => 'ç',
+      '\u00ea' => 'ê', '\u00fb' => 'û', '\u00b4' => '´',
+      '\u00ed' => 'í', '\u2030' => '‰', '\u20ac' => '€',
+      '\u00a3' => '£', '\u00c9' => 'É', '\u00eb' => 'ë'
+    }.each { |k, v| string = string.gsub(k, v) }
+    string
   end
 
   def self.log(bar_info)
-    log(bar_info)
     infos = [
       ['name', bar_name(bar_info)],
       ['address', bar_address(bar_info)],
