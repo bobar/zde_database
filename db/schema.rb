@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140920132048) do
+ActiveRecord::Schema.define(version: 20140920215016) do
+
+  create_table "bar_geoflipper", force: true do |t|
+    t.integer "bar_id"
+    t.string  "name"
+    t.string  "url"
+    t.float   "latitude",  limit: 24
+    t.float   "longitude", limit: 24
+  end
+
+  add_index "bar_geoflipper", ["url"], name: "index_bar_geoflipper_on_url", unique: true, using: :btree
 
   create_table "bar_google", force: true do |t|
     t.integer  "bar_id"
