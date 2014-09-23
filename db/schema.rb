@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140920215016) do
+ActiveRecord::Schema.define(version: 20140921200523) do
 
   create_table "bar_geoflipper", force: true do |t|
     t.integer "bar_id"
@@ -67,6 +67,29 @@ ActiveRecord::Schema.define(version: 20140920215016) do
     t.string   "hh_close"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "pinball_ipdb", force: true do |t|
+    t.integer "ipdb_id"
+    t.integer "pinball_id"
+    t.string  "name"
+    t.string  "manufacturer"
+    t.integer "year"
+    t.float   "rating",           limit: 24
+    t.float   "rating_art",       limit: 24
+    t.float   "rating_audio",     limit: 24
+    t.float   "rating_playfield", limit: 24
+    t.float   "rating_gameplay",  limit: 24
+    t.integer "ratings"
+  end
+
+  add_index "pinball_ipdb", ["ipdb_id"], name: "index_pinball_ipdb_on_ipdb_id", unique: true, using: :btree
+  add_index "pinball_ipdb", ["pinball_id"], name: "pinball_ipdb_ibfk_1", using: :btree
+
+  create_table "pinballs", force: true do |t|
+    t.string  "name"
+    t.string  "manufacturer"
+    t.integer "year"
   end
 
 end
