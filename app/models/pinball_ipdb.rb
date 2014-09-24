@@ -1,6 +1,9 @@
 require 'console'
+require 'parsing'
 
 class PinballIpdb < ActiveRecord::Base
+  extend Console
+  extend Parsing
   self.table_name = 'pinball_ipdb'
 
   def self.fill_table
@@ -15,7 +18,7 @@ class PinballIpdb < ActiveRecord::Base
   end
 
   def self.process_pinball(text)
-    Console.log(infos(text))
+    log(infos(text))
     pinball = create_pinball(infos(text))
     return if find_by(pinball_id: pinball[:id])
     create(infos(text).merge(pinball_id: pinball[:id]))
@@ -35,24 +38,24 @@ class PinballIpdb < ActiveRecord::Base
   end
 
   def self.general_infos(text)
-    zde = {
-      ipdb_id: /(?<=id=)(.*?)(?=\">)/,
-      name: /(?<=<B>)(.*?)(?=<\/B>)/,
-      manufacturer: /(?<=<font size=-2><I>by )(.*?)(?=<\/I>)/,
-      year: /(?<=<font size=-1>)(.*?)(?=<\/font>)/
-    }
-    zde.each { |k, v| zde[k] = v.match(text).to_s }
+    regex(
+      text,
+      ipdb_id: ['id=', '\">'],
+      name: ['<B>', '<\/B>'],
+      manufacturer: ['<font size=-2><I>by ', '<\/I>'],
+      year: ['<font size=-1>', '<\/font>']
+    )
   end
 
   def self.rating_infos(text)
-    zde = {
-      rating: %r{(?<=<td nowrap>&nbsp\;)(.*?)(?=<font size=-2>\/10<\/font>)},
-      rating_art: %r{(?<=<em>Art:<\/em>)(.*?)(?=<\/font>)},
-      rating_audio: %r{(?<=<em>Audio:<\/em>)(.*?)(?=<\/font>)},
-      rating_playfield: %r{(?<=<em>Playfield:<\/em>)(.*?)(?=<\/font>)},
-      rating_gameplay: %r{(?<=<em>Fun:<\/em>)(.*?)(?=<\/font>)},
-      ratings: /(?<=<td nowrap align=right><font size=-1>)(.*?)(?= ratings)/
-    }
-    zde.each { |k, v| zde[k] = v.match(text).to_s }
+    regex(
+      text,
+      rating: ['<td nowrap>&nbsp\;', '<font size=-2>\/10<\/font>'],
+      rating_art: ['<em>Art:<\/em>', '<\/font>'],
+      rating_audio: ['<em>Audio:<\/em>', '<\/font>'],
+      rating_playfield: ['<em>Playfield:<\/em>', '<\/font>'],
+      rating_gameplay: ['<em>Fun:<\/em>', '<\/font>'],
+      ratings: ['<td nowrap align=right><font size=-1>', ' ratings']
+    )
   end
 end
