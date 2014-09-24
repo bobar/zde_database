@@ -1,3 +1,5 @@
+require 'console'
+
 class PinballIpdb < ActiveRecord::Base
   self.table_name = 'pinball_ipdb'
 
@@ -13,7 +15,7 @@ class PinballIpdb < ActiveRecord::Base
   end
 
   def self.process_pinball(text)
-    log(infos(text))
+    Console.log(infos(text))
     pinball = create_pinball(infos(text))
     return if find_by(pinball_id: pinball[:id])
     create(infos(text).merge(pinball_id: pinball[:id]))
@@ -51,10 +53,5 @@ class PinballIpdb < ActiveRecord::Base
       ratings: /(?<=<td nowrap align=right><font size=-1>)(.*?)(?= ratings)/
     }
     zde.each { |k, v| zde[k] = v.match(text).to_s }
-  end
-
-  def self.log(infos)
-    rows = infos.each { |k, v| [k, v] }
-    puts Terminal::Table.new rows: rows
   end
 end

@@ -1,3 +1,5 @@
+require 'console'
+
 class BarGeoflipper < ActiveRecord::Base
   self.table_name = 'bar_geoflipper'
 
@@ -5,7 +7,7 @@ class BarGeoflipper < ActiveRecord::Base
     uri = URI.parse('http://geoflipper.fr/category/france/ile-de-france/paris/')
     doc = Net::HTTP.get_response(uri).body.gsub(/(\n|\t)/, '')
     doc.scan(/var point(.*?)createMarker/).map(&:first).each do |text|
-      log(bar_infos(text))
+      Console.log(bar_infos(text))
       create_bar(bar_infos(text))
     end
     true
@@ -26,10 +28,5 @@ class BarGeoflipper < ActiveRecord::Base
     bar[:latitude] = infos[:lat]
     bar[:longitude] = infos[:lng]
     bar.save
-  end
-
-  def self.log(infos)
-    rows = infos.each { |k, v| [k, v] }
-    puts Terminal::Table.new rows: rows
   end
 end
