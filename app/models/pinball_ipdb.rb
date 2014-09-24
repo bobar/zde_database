@@ -35,12 +35,13 @@ class PinballIpdb < ActiveRecord::Base
   end
 
   def self.general_infos(text)
-    {
-      ipdb_id: /(?<=id=)(.*?)(?=\">)/.match(text).to_s,
-      name: /(?<=<B>)(.*?)(?=<\/B>)/.match(text).to_s,
-      manufacturer: /(?<=<font size=-2><I>by )(.*?)(?=<\/I>)/.match(text).to_s,
-      year: /(?<=<font size=-1>)(.*?)(?=<\/font>)/.match(text).to_s
+    zde = {
+      ipdb_id: /(?<=id=)(.*?)(?=\">)/,
+      name: /(?<=<B>)(.*?)(?=<\/B>)/,
+      manufacturer: /(?<=<font size=-2><I>by )(.*?)(?=<\/I>)/,
+      year: /(?<=<font size=-1>)(.*?)(?=<\/font>)/
     }
+    zde.each { |k, v| zde[k] = v.match(text).to_s }
   end
 
   def self.rating_infos(text)

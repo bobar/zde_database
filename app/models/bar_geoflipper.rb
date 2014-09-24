@@ -14,12 +14,13 @@ class BarGeoflipper < ActiveRecord::Base
   end
 
   def self.bar_infos(text)
-    {
-      name: /(?<=var the_title = ')(.*?)(?='\;)/.match(text).to_s,
-      url: /(?<=var the_link = ')(.*?)(?='\;)/.match(text).to_s,
-      lat: /(?<=LatLng\()(.*?)(?=, )/.match(text).to_s,
-      lng: /(?<=, )(.*?)(?=\)\;)/.match(text).to_s
+    zde = {
+      name: /(?<=var the_title = ')(.*?)(?='\;)/,
+      url: /(?<=var the_link = ')(.*?)(?='\;)/,
+      lat: /(?<=LatLng\()(.*?)(?=, )/,
+      lng: /(?<=, )(.*?)(?=\)\;)/
     }
+    zde.each { |k, v| zde[k] = v.match(text).to_s }
   end
 
   def self.create_bar(infos)
