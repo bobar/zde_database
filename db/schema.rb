@@ -11,14 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140921200523) do
+ActiveRecord::Schema.define(version: 20140924201343) do
 
   create_table "bar_geoflipper", force: true do |t|
     t.integer "bar_id"
     t.string  "name"
     t.string  "url"
-    t.float   "latitude",  limit: 24
-    t.float   "longitude", limit: 24
+    t.float   "latitude",    limit: 24
+    t.float   "longitude",   limit: 24
+    t.string  "last_update"
   end
 
   add_index "bar_geoflipper", ["url"], name: "index_bar_geoflipper_on_url", unique: true, using: :btree
@@ -68,6 +69,18 @@ ActiveRecord::Schema.define(version: 20140921200523) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "pinball_geoflipper", force: true do |t|
+    t.integer  "pinball_id"
+    t.integer  "bar_id"
+    t.string   "name"
+    t.string   "manufacturer"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "pinball_geoflipper", ["bar_id"], name: "pinball_geoflipper_ibfk_2", using: :btree
+  add_index "pinball_geoflipper", ["pinball_id"], name: "pinball_geoflipper_ibfk_1", using: :btree
 
   create_table "pinball_ipdb", force: true do |t|
     t.integer "ipdb_id"

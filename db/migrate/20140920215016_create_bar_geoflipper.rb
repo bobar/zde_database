@@ -6,6 +6,7 @@ class CreateBarGeoflipper < ActiveRecord::Migration
       t.string :url
       t.float :latitude
       t.float :longitude
+      t.string :last_update
     end
     add_index :bar_geoflipper, :url, unique: true
   end

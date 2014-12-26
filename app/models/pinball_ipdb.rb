@@ -25,8 +25,9 @@ class PinballIpdb < ActiveRecord::Base
   end
 
   def self.create_pinball(infos)
-    Pinball.find_or_create_by(name: infos[:name])
-      .update(manufacturer: infos[:manufacturer], year: infos[:year])
+    pinball = Pinball.find_or_create_by(name: infos[:name])
+    pinball.update(manufacturer: infos[:manufacturer], year: infos[:year])
+    pinball
   end
 
   def self.infos(text)

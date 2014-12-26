@@ -6,7 +6,7 @@ class BarGeoflipper < ActiveRecord::Base
   extend Parsing
   self.table_name = 'bar_geoflipper'
 
-  def self.paris_bars
+  def self.fill_table
     uri = URI.parse('http://geoflipper.fr/category/france/ile-de-france/paris/')
     doc = Net::HTTP.get_response(uri).body.gsub(/(\n|\t)/, '')
     doc.scan(/var point(.*?)createMarker/).map(&:first).each do |text|
